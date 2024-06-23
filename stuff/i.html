@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+
+
+<HEAD>
+ <TITLE>test</TITLE>
+</HEAD>
+<BODY BGCOLOR="WHITE">
+<H2 ALIGN="CENTER">Dispencer thing</H2>
+<!-- 
+<FORM ACTION="http://localhost:8088/SomeProgram">
+<CENTER>
+<BUTTON TYPE="SUBMIT">Single-line Label</BUTTON>
+&nbsp;&nbsp;
+<BUTTON TYPE="SUBMIT">Multi-line<BR>label</BUTTON>
+<P>
+<BUTTON TYPE="SUBMIT">
+<B>Label</B> with <I>font</I> changes.
+</BUTTON>
+<P>
+<BUTTON TYPE="SUBMIT">
+<IMG SRC="pill.jpg" WIDTH=110 HEIGHT=101 
+   ALIGN="LEFT" ALT="Java Cup Logo">
+Label<BR>with image
+</BUTTON>
+</CENTER>
+</FORM>
+ -->
+
+<BUTTON id='button' TYPE="BUTTON" onClick="doSomething(testData, myCallbackOnClick)">
+<IMG SRC="pill.jpg" _WIDTH=200 _HEIGHT=60 
+   ALIGN="LEFT" ALT="blah">
+<BR>Dispence the pill
+</BUTTON>
+
+
+
+<script>
+var testData={"email": "hey@mail.com", "hello": "please run the pyton script to dispence"};
+
+function myCallbackOnClick(data) {
+	alert("Dispenced: "+JSON.stringify(data));
+    console.log("and the data is", typeof data, data);
+    var zzz = document.createElement('p');
+    zzz.appendChild(
+      document.createTextNode('Data: ' + JSON.stringify(data))
+    );
+    document.body.append(zzz);
+}
+
+
+async function doSomething(aaa,zzz) {
+	  //alert('You clicked me!');
+	  
+      const reqProps = {
+	  		  method: 'post',
+	  		  headers: {
+	  			    'Accept': '*/*'
+	  			  },
+	  		  mode: 'cors',
+	  		  cache: 'default',
+	  		  body: JSON.stringify(aaa)
+	  		};
+
+	  var r=await fetch(new Request('TestServlet'),reqProps).then(function(response) {
+	      if (!response.ok) {throw new Error("HTTP error, status = " + response.status);}
+	      let b=response.json();
+	      console.log("response.json",typeof b, b);
+	        return b;
+	  	}
+	  ).then((data)=>{
+		  zzz(data);   
+	      }
+	  ).catch(function(error) {
+	        var p = document.createElement('p');
+	        p.appendChild(
+	          document.createTextNode('Error: ' + error.message)
+	        );
+	        document.body.insertBefore(p, document.getElementById("button"));
+	  });
+	  console.log("Received: ",r)  
+}
+
+const btn = document.getElementById("button");
+btn.addEventListener('click', () => {
+  let pElem = document.createElement('p');
+  pElem.textContent = 'This is a newly-added paragraph.';
+  document.body.appendChild(pElem);
+});
+
+</script>  
+
+
+</script> 
+
+<script>
+
+</script>
+
+</BODY>
+</HTML>
