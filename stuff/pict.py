@@ -31,4 +31,3 @@ while True:
     status = cv2.imwrite(file, img)
     command["key6"] = "hello from python"
     writeoutput(command)
-    #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
