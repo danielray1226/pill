@@ -124,9 +124,9 @@ public class ProcessMaster implements AutoCloseable{
 	}
 
 	public static void main(String[] args) throws IOException {
-		String dir = "/run/images";
+		String dir = "/tmp/images";
 		Files.createDirectories(Paths.get(dir));
-		try (ProcessMaster p = new ProcessMaster("python", "/home/daniel/pict.py")) {
+		try (ProcessMaster p = new ProcessMaster("python3", "/home/daniel/workspace/pill/stuff/pict.py")) {
 			for (int i = 0; i < 10; i++) {
 				JsonObject json = new JsonObject();
 				json.addProperty("file", dir+"/"+i+".bmp");

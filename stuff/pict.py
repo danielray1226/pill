@@ -2,7 +2,7 @@ import struct
 import os
 import json
 import cv2
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 cap.set(3, 640)
 cap.set(4, 480)
 infd=0
