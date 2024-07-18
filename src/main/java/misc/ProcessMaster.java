@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.channels.Channel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -61,7 +62,6 @@ public class ProcessMaster implements AutoCloseable{
 	}
 
 	byte[] trysenddata(byte[] data) throws IOException {
-
 		dos.writeInt(data.length);
 		dos.write(data);
 		dos.flush();
