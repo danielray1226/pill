@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+<script src="myscripts.js"></script>
+<style>
+</style>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<div id="wrapper">
+		<div id="top"></div>
+		<div id="main">
+			<table style="width: 100%">
+				<tr>
+					<th style="width: 70%">
+						<div class="screens">
+							<div id="welcomeId" class="screenCssClass">
+								<div class="welcomeCssClass">
+									<h1>Welcome To The Pill Dispener &trade;</h1>
+									<p>Daniel Raybosh &#169;</p>
+									<p>Ella Raybosh &#169;</p>
+								</div>
+							</div>
+
+							<div id="dispensingScreenId" class="screenCssClass">
+								<div>
+									<button id='button' TYPE="BUTTON" class="btn"
+										onClick="doSomething(testData, myCallbackOnClick)">
+										<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
+											ALT="blah"> <BR>Dispence the pill
+									</button>
+									<button id='button' TYPE="BUTTON" class="btn"
+										onClick="doSomething(testData, myCallbackOnClick)">
+										<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
+											ALT="blah"> <BR>Dispence the pill
+									</button>
+								</div>
+							</div>
+
+							<div id="schedule" class="screenCssClass">
+								<h1>Schedule</h1>
+								<p>Schedule is to schedule dispense.</p>
+							</div>
+
+							<div id="settings" class="screenCssClass">
+								<h1>Settings</h1>
+								<p>Settings is to setup.</p>
+							</div>
+						</div>
+					</th>
+					<th style="width: 30%; background: #ff9e2c">
+						<div class="cameras">
+							<img src="mjpeg/default"/> <img src="mjpeg/ai" width="50" height="50"/>
+						</div>
+					</th>
+				</tr>
+			</table>
+			<div class="container"></div>
+		</div>
+
+		<div id="bottom">
+			<button class="tablink" onclick="openScreen('welcomeId')"
+				id="welcomeDivId">Welcome</button>
+			<button class="tablink" onclick="openScreen('dispensingScreenId')">
+				Dispence</button>
+			<button class="tablink" onclick="openScreen('schedule')">Schedule</button>
+			<button class="tablink" onclick="openScreen('settings')">Settings</button>
+		</div>
+	</div>
+	<script>
+		document.getElementById("welcomeDivId").click();
+	</script>
+</body>
+
+</html>
+

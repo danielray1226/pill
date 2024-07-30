@@ -1,0 +1,70 @@
+@charset "UTF-8";
+html, body, #wrapper {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+#wrapper {
+	position: relative;
+}
+
+#top, #main, #bottom {
+	position: absolute;
+}
+#top  {
+	top:0;
+	height: 50px;
+	width: 100%;
+	background: grey;
+}
+#main {
+	top: 50px;
+	bottom: 50px;
+	width: 100%;
+	background: #b6701e;
+	color: white;
+}
+.tablink {
+   background-color: #555;
+   color: white;
+   float: left;
+   border: none;
+   outline: none;
+   cursor: pointer;
+   padding: 14px 16px;
+   font-size: 17px;
+   width: 25%;
+}
+.tablink:hover {
+	background-color: #777;
+}
+.screenCssClass {
+	color: white;
+	display: none;
+	text-align: center;
+}
+
+.container {
+   display: block;
+   height: 100%;
+   width: 100%;
+}
+
+.screens {
+   background: #ff9e2c;
+   display: block;
+}
+
+.cameras {
+   background: #b6701e;
+   display: block;
+   width: 30%;
+}
+
+#bottom {
+	bottom: 0;
+	height: 50px;
+	width: 100%;
+	background: grey;
+}

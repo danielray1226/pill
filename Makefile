@@ -19,6 +19,9 @@ all: deploy
 
 deploy: war
 	cp $(ROOT)/target/pill.war /opt/tomcat/webapps/ROOT.war
+pi: war
+	scp $(ROOT)/target/pill.war pi@192.168.50.49:/opt/tomcat/webapps/ROOT.war
+
 
 
 LIB_LIST:=$(shell find $(ROOT)/WebContent/WEB-INF/lib -name '*.jar' -printf '%p:')
