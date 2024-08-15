@@ -22,7 +22,7 @@ html, body, #wrapper {
 	top: 50px;
 	bottom: 50px;
 	width: 100%;
-	background: #b6701e;
+	background: rgb(255, 255, 255);
 	color: white;
 }
 .tablink {
@@ -52,12 +52,13 @@ html, body, #wrapper {
 }
 
 .screens {
-   background: #ff9e2c;
+   background: rgb(192, 191, 188);
    display: block;
 }
 
 .cameras {
-   background: #b6701e;
+   background: rgb(192, 191, 188);
+   color: rgb(192, 191, 188);
    display: block;
    width: 30%;
 }

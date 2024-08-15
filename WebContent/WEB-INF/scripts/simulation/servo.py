@@ -2,7 +2,7 @@ import struct
 import os
 import json
 import time    #https://docs.python.org/fr/3/library/time.html
-from adafruit_servokit import ServoKit
+import subprocess
 infd=0
 outfd= os.dup(1)
 print("new fd = ", outfd)
@@ -21,17 +21,11 @@ def writeoutput(j):
     finding= struct.pack('>I', lb)
     os.write(outfd, finding)
     os.write(outfd, b)
-MIN_IMPULSE = 450
-MAX_IMPULSE = 2650
-MIN_ANGLE=0
-MAX_ANGLE=270
-board = ServoKit(channels=16,frequency=60)  
-for i in range(16):
-    board.servo[i].actuation_range=270
-    board.servo[i].set_pulse_width_range(MIN_IMPULSE, MAX_IMPULSE)
+
 while True: 
     command = readinput()
     angle = command["angle"]
     servo = command["servonum"]
-    board.servo[servo].angle=angle
+    speech = "Rotating servo " + str(servo) + " to the angle of " + str(angle)
+    subprocess.run(["espeak", speech]) 
     writeoutput(command)

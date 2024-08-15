@@ -8,8 +8,8 @@ import control.Brain;
 public class ServoTest {
 	
 	public static void main(String[] args) throws Exception{
-		String subscript = ". ~/.venv/bin/activate ; python3 " + Brain.getRoot() + "/WEB-INF/scripts/"+ EnvUtils.getEnvName()+ "/servo.py";
-		ProcessMaster p = new ProcessMaster("bash", "-c", subscript);
+		String subscript = Brain.getRoot() + "/WEB-INF/scripts/"+ EnvUtils.getEnvName()+ "/servo.sh";
+		ProcessMaster p = new ProcessMaster(subscript);
 				JsonObject json = new JsonObject();
 				json.addProperty("angle", 270);
 				json.addProperty("servonum", 0);

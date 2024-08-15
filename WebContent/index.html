@@ -1,114 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+<script src="myscripts.js"></script>
+<style>
+</style>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-
 </head>
-<style>
-table {
-	font-family: "Lato", sans-serif;
-	height:600px;
-	background-color: #24606D;
-	width:100%;
-}
-
-th, td {
-	border: 1px solid black;
-}
-.tablink {
-  background-color: #555;
-  color: white;
-  font-size: 17px;
-}
-
-.screenCssClass {
-	color: white;
-	display: none;
-	text-align: center;
-}
-
-.tablink:hover {
-	background-color: #777;
-}
-
-.bottomrow {
-}
-</style>
 <body>
-	<table>
-		<tr style="height:100%">
-			<th style="width: 70%">
-				<div class="main">
 
-					<div id="welcomeId" class="screenCssClass">
-						<div class="welcomeCssClass">
-							<h1>Welcome To The Pill Dispener &trade;</h1>
-							<p>Daniel Raybosh &#169;</p>
-							<p>Ella Raybosh &#169;</p>
+	<div id="wrapper">
+		<div id="top"></div>
+		<div id="main">
+			<table style="width: 100%">
+				<tr>
+					<th style="width: 70%">
+						<div class="screens">
+							<div id="welcomeId" class="screenCssClass">
+								<div class="welcomeCssClass">
+									<h1>Welcome To The Pill Dispener &trade;</h1>
+									<p>Daniel Raybosh &#169;</p>
+									<p>Ella Raybosh &#169;</p>
+								</div>
+							</div>
+
+							<div id="dispensingScreenId" class="screenCssClass">
+								<div>
+									<button id='button' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(0)">
+										<img src="pills.png" WIDTH=200px HEIGHT=200px align="center"
+											ALT="blah"> <BR>Dispence the pill
+									</button>
+									<button id='button' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(1)">
+										<img src="pills.png" WIDTH=200px HEIGHT=200px align="center"
+											ALT="blah"> <BR>Dispence the pill
+									</button>
+								</div>
+							</div>
+
+							<div id="schedule" class="screenCssClass">
+								<h1>Schedule</h1>
+								<p>Schedule is to schedule dispense.</p>
+							</div>
+
+							<div id="settings" class="screenCssClass">
+								<h1>Settings</h1>
+								<p>Settings is to setup.</p>
+							</div>
 						</div>
-					</div>
-
-					<div id="dispensingScreenId" class="screenCssClass">
-						<div>
-							<button id='button' TYPE="BUTTON" class="btn"
-								onClick="doSomething(testData, myCallbackOnClick)">
-								<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
-									ALT="blah"> <BR>Dispence the pill
-							</button>
-							<button id='button' TYPE="BUTTON" class="btn"
-								onClick="doSomething(testData, myCallbackOnClick)">
-								<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
-									ALT="blah"> <BR>Dispence the pill
-							</button>
+					</th>
+					<th style="width: 30%; background: rgb(192, 191, 188)">
+						<div class="cameras">
+							<img src="mjpeg/default" WIDTH=325% HEIGHT=150% align="middle" /> <img src="mjpeg/ai" WIDTH=325% HEIGHT=150% align="middle" />
 						</div>
-					</div>
+					</th>
+				</tr>
+			</table>
+			<div class="container"></div>
+		</div>
 
-					<div id="schedule" class="screenCssClass">
-						<h1>Schedule</h1>
-						<p>Schedule is to schedule dispense.</p>
-					</div>
-
-					<div id="settings" class="screenCssClass">
-						<h1>Settings</h1>
-						<p>Settings is to setup.</p>
-					</div>
-				</div>
-			</th>
-
-			<th style="width: 30%">
-				<img src="mjpeg/default"/>
-				<img src="mjpeg/ai"/>
-				
-			</th>
-		</tr>
-		<tr>
-			<th style="width: 100%; height: 10%" colspan="2">
-					<button class="tablink" onclick="openScreen('welcomeId', 'red')"
-						id="welcomeDivId">Welcome</button>
-					<button class="tablink"
-						onclick="openScreen('dispensingScreenId')">Dispence</button>
-					<button class="tablink" onclick="openScreen('Schedule')">Schedule</button>
-					<button class="tablink" onclick="openScreen('Settings')">Settings</button>
-			</th>
-		</tr>
-	</table>
-	<!-- Tab links -->
-
-
+		<div id="bottom">
+			<button class="tablink" onclick="openScreen('welcomeId')"
+				id="welcomeDivId">Welcome</button>
+			<button class="tablink" onclick="openScreen('dispensingScreenId')">
+				Dispence</button>
+			<button class="tablink" onclick="openScreen('schedule')">Schedule</button>
+			<button class="tablink" onclick="openScreen('settings')">Settings</button>
+		</div>
+	</div>
 	<script>
-	function openScreen(screenName) {
-		  var i, tablinks;
-		  let screens = document.getElementsByClassName("screenCssClass");
-		  console.log("screens by class: ", screens)
-		  
-		  for (i = 0; i < screens.length; i++) {
-			  screens[i].style.display = "none";
-		  }
-		  document.getElementById(screenName).style.display = "block";
-
-		}
-	document.getElementById("welcomeDivId").click();
+		document.getElementById("welcomeDivId").click();
 	</script>
 </body>
+
 </html>
+

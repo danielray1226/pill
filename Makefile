@@ -19,8 +19,11 @@ all: deploy
 
 deploy: war
 	cp $(ROOT)/target/pill.war /opt/tomcat/webapps/ROOT.war
+local: war
+	cp $(ROOT)/target/pill.war /opt/tomcat/webapps/ROOT.war
+	$(ROOT)/bounce.sh
 pi: war
-	scp $(ROOT)/target/pill.war pi@192.168.50.49:/opt/tomcat/webapps/ROOT.war
+	cat $(ROOT)/target/pill.war |ssh pi@192.168.25.1 'cat > /opt/tomcat/webapps/ROOT.war ; rm -rf /opt/tomcat/webapps/ROOT ; sudo systemctl restart tomcat ; sudo systemctl restart pill-x' 
 
 
 

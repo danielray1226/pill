@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import misc.EnvUtils;
 import misc.ProcessMaster;
 import mjpeg.Mjpeg;
 
@@ -34,7 +37,15 @@ public class Brain {
 			return b;
 		}
 	}
-
+	List<Dispenser> dispensers = new ArrayList<Dispenser>();
+	ProcessMaster servoController;
+	ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
+	ProcessMaster pm;
+	AtomicInteger count = new AtomicInteger();
+	String dir = "/dev/shm/images";
+	static volatile String defaultroot;
+	String root;
+	
 	public static String getRoot() {
 
 		if (defaultroot != null)
@@ -51,12 +62,7 @@ public class Brain {
 		return Helper.brain;
 	}
 
-	ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
-	ProcessMaster pm;
-	AtomicInteger count = new AtomicInteger();
-	String dir = "/tmp/images";
-	static volatile String defaultroot;
-	String root;
+
 
 	public static void setDefaultRoot(String defroot) {
 		defaultroot = defroot;
@@ -66,7 +72,9 @@ public class Brain {
 
 	public void init(String root) {
 		this.root = root;
-		pm = new ProcessMaster("python3", root + "/WEB-INF/scripts/pict.py");
+		pm = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/pict.py");
+		String subscript = Brain.getRoot() + "/WEB-INF/scripts/"+ EnvUtils.getEnvName()+ "/servo.sh";
+		servoController = new ProcessMaster("sh", subscript);
 		schedule.scheduleAtFixedRate(new Runnable() {
 
 			@Override
@@ -86,9 +94,17 @@ public class Brain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
+		for(int i =0; i<4; i++) {
+			dispensers.add(new Dispenser(i, this));
+		}
 	}
-
+	public void dispense (int servonum) throws IOException, InterruptedException { 
+		dispensers.get(servonum).dispense();
+		
+	}
+	public ProcessMaster getServoController () {
+		return servoController;
+	}
 	public void destroy() {
 		destroy = true;
 		schedule.shutdownNow();
