@@ -17,6 +17,8 @@ public class AppContextListener implements ServletContextListener {
 		System.out.println("Context Initialized: " + sce);
 	}
 	public void contextDestroyed(javax.servlet.ServletContextEvent sce) {
+		if(brain!=null) {
 		brain.destroy();
+		}
 	}
 }

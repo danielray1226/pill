@@ -6,10 +6,12 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,15 +39,18 @@ public class Brain {
 			return b;
 		}
 	}
+	volatile JsonElement faceDetections;
 	List<Dispenser> dispensers = new ArrayList<Dispenser>();
 	ProcessMaster servoController;
 	ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
+	ExecutorService offloaded = Executors.newCachedThreadPool();
 	ProcessMaster pm;
-	AtomicInteger count = new AtomicInteger();
+	ProcessMaster face;
+	AtomicLong count = new AtomicLong();
 	String dir = "/dev/shm/images";
 	static volatile String defaultroot;
 	String root;
-	
+
 	public static String getRoot() {
 
 		if (defaultroot != null)
@@ -62,8 +67,6 @@ public class Brain {
 		return Helper.brain;
 	}
 
-
-
 	public static void setDefaultRoot(String defroot) {
 		defaultroot = defroot;
 	}
@@ -73,10 +76,11 @@ public class Brain {
 	public void init(String root) {
 		this.root = root;
 		pm = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/pict.py");
-		String subscript = Brain.getRoot() + "/WEB-INF/scripts/"+ EnvUtils.getEnvName()+ "/servo.sh";
+		face = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/face.py",
+				root + "/WEB-INF/scripts/haarcascade_frontalface_alt.xml");
+		String subscript = Brain.getRoot() + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/servo.sh";
 		servoController = new ProcessMaster("sh", subscript);
 		schedule.scheduleAtFixedRate(new Runnable() {
-
 			@Override
 			public void run() {
 				try {
@@ -94,21 +98,25 @@ public class Brain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		for(int i =0; i<4; i++) {
+		for (int i = 0; i < 4; i++) {
 			dispensers.add(new Dispenser(i, this));
 		}
 	}
-	public void dispense (int servonum) throws IOException, InterruptedException { 
+
+	public void dispense(int servonum) throws IOException, InterruptedException {
 		dispensers.get(servonum).dispense();
-		
+
 	}
-	public ProcessMaster getServoController () {
+
+	public ProcessMaster getServoController() {
 		return servoController;
 	}
+
 	public void destroy() {
 		destroy = true;
 		schedule.shutdownNow();
 		pm.destroy();
+		face.destroy();
 
 	}
 
@@ -125,13 +133,61 @@ public class Brain {
 		if (destroy)
 			return;
 		JsonObject json = new JsonObject();
-		int amount = count.incrementAndGet();
+		long amount = count.incrementAndGet();
 		String name = dir + "/" + amount + ".jpeg";
 		json.addProperty("file", name);
 		JsonElement elem = pm.sendobject(json);
+		TempFile f = new TempFile(new File(name));
+		sendToFaceDetection(f);
 		// System.out.println(elem);
-		byte[] img = Files.readAllBytes(new File(name).toPath());
-		Files.delete(new File(name).toPath());
+		try { 
+			byte[] img = f.readAllBytes();
+		
+
+		f.decrementUsage();
+
 		Mjpeg.pushImage(img, "default");
+		} catch (Exception e) {
+			
+		}
 	}
+
+	volatile boolean isRunning = false;
+	Object mutex = new Object();
+
+	private void sendToFaceDetection(TempFile tempFile) {
+			if (!isRunning) {
+				tempFile.incrementUsage();
+				offloaded.submit(new Runnable() {
+
+					@Override
+					public void run() {
+						try { 
+						synchronized (mutex) {
+							if (isRunning)
+								return;
+							isRunning = true;
+						}
+						JsonElement ai;
+						JsonObject j = new JsonObject();
+						j.addProperty("file", tempFile.getAbsolutePath());
+						try {
+							faceDetections = face.sendobject(j);
+							System.err.println(faceDetections);
+							//System.out.println(ai);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						isRunning = false;
+
+					} finally {
+						tempFile.decrementUsage();
+					}
+					}
+				});
+			}
+		}
+	
 }

@@ -3,6 +3,9 @@ import os
 import json
 import time    #https://docs.python.org/fr/3/library/time.html
 import subprocess
+import sys
+print(sys.argv)
+print(sys.argv[1])
 infd=0
 outfd= os.dup(1)
 print("new fd = ", outfd)

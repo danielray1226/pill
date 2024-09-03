@@ -26,7 +26,26 @@ def writeoutput(j):
 while True: 
     command = readinput()
     file = command["file"]
+    #print("taking picture " + file)
     success, img = cap.read()
-    status = cv2.imwrite(file, img)
+    if (success):
+        #aiImage = img.copy()
+        if command.get("faces") == None:
+            print('Key not found')
+        else:
+            print('Key found')
+            faces= command["faces"]
+            for face in faces:
+                print(face)
+                x = face["x"]
+                y = face["y"]
+                w = face["w"]
+                h = face["h"]
+                print(x, y, w, h)
+                #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                #cv2.imshow('Video', frame)
+                #cv2.imwrite('video.png', frame)
+        status = cv2.imwrite(file, img)
+    	
     command["key6"] = "hello from python"
     writeoutput(command)
