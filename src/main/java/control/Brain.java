@@ -1,10 +1,12 @@
 package control;
 
+import misc.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import misc.EnvUtils;
+import misc.JsonUtils;
 import misc.ProcessMaster;
 import mjpeg.Mjpeg;
 
@@ -39,12 +42,14 @@ public class Brain {
 			return b;
 		}
 	}
+
 	volatile JsonElement faceDetections;
+	volatile long lastFaceDetectionMS;
 	List<Dispenser> dispensers = new ArrayList<Dispenser>();
 	ProcessMaster servoController;
 	ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
 	ExecutorService offloaded = Executors.newCachedThreadPool();
-	ProcessMaster pm;
+	ProcessMaster cameraMaster;
 	ProcessMaster face;
 	AtomicLong count = new AtomicLong();
 	String dir = "/dev/shm/images";
@@ -75,9 +80,10 @@ public class Brain {
 
 	public void init(String root) {
 		this.root = root;
-		pm = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/pict.py");
-		face = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/face.py",
-				root + "/WEB-INF/scripts/haarcascade_frontalface_alt.xml");
+		cameraMaster = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/pict.py",
+				dir);
+		face = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/yoloface.py",
+				root + "/WEB-INF/scripts/yolov8n-face.pt");
 		String subscript = Brain.getRoot() + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/servo.sh";
 		servoController = new ProcessMaster("sh", subscript);
 		schedule.scheduleAtFixedRate(new Runnable() {
@@ -101,8 +107,25 @@ public class Brain {
 		for (int i = 0; i < 4; i++) {
 			dispensers.add(new Dispenser(i, this));
 		}
-	}
+		schedule.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					JsonObject message = new JsonObject();
+					message.addProperty("type", "screensaver");
+					message.addProperty("screensaver", ss);
+					ss=!ss;
+					Broadcaster.broadcast(message);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
+			}
+
+		}, 10, 10, TimeUnit.SECONDS);
+	}
+	static boolean ss = false;
 	public void dispense(int servonum) throws IOException, InterruptedException {
 		dispensers.get(servonum).dispense();
 
@@ -115,7 +138,7 @@ public class Brain {
 	public void destroy() {
 		destroy = true;
 		schedule.shutdownNow();
-		pm.destroy();
+		cameraMaster.destroy();
 		face.destroy();
 
 	}
@@ -133,22 +156,26 @@ public class Brain {
 		if (destroy)
 			return;
 		JsonObject json = new JsonObject();
-		long amount = count.incrementAndGet();
-		String name = dir + "/" + amount + ".jpeg";
-		json.addProperty("file", name);
-		JsonElement elem = pm.sendobject(json);
+		JsonElement arr = JsonUtils.getJsonElement(faceDetections, "faces");
+		if (arr != null && arr.isJsonArray()) {
+			json.add("faces", arr);
+		}
+		JsonElement elem = cameraMaster.sendobject(json);
+		String name = JsonUtils.getString(elem, "file");
+		if (name == null) {
+			return;
+		}
 		TempFile f = new TempFile(new File(name));
 		sendToFaceDetection(f);
 		// System.out.println(elem);
-		try { 
-			byte[] img = f.readAllBytes();
-		
-
+		byte[] img = f.readAllBytes();
 		f.decrementUsage();
-
 		Mjpeg.pushImage(img, "default");
-		} catch (Exception e) {
-			
+		String aiFile = JsonUtils.getString(elem, "aiFile");
+		if (aiFile != null) {
+			TempFile aif = new TempFile(new File(aiFile));
+			Mjpeg.pushImage(aif.readAllBytes(), "ai");
+			aif.decrementUsage();
 		}
 	}
 
@@ -156,13 +183,13 @@ public class Brain {
 	Object mutex = new Object();
 
 	private void sendToFaceDetection(TempFile tempFile) {
-			if (!isRunning) {
-				tempFile.incrementUsage();
-				offloaded.submit(new Runnable() {
+		if (!isRunning) {
+			tempFile.incrementUsage();
+			offloaded.submit(new Runnable() {
 
-					@Override
-					public void run() {
-						try { 
+				@Override
+				public void run() {
+					try {
 						synchronized (mutex) {
 							if (isRunning)
 								return;
@@ -173,8 +200,9 @@ public class Brain {
 						j.addProperty("file", tempFile.getAbsolutePath());
 						try {
 							faceDetections = face.sendobject(j);
+							lastFaceDetectionMS = System.currentTimeMillis();
 							System.err.println(faceDetections);
-							//System.out.println(ai);
+							// System.out.println(ai);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -185,9 +213,9 @@ public class Brain {
 					} finally {
 						tempFile.decrementUsage();
 					}
-					}
-				});
-			}
+				}
+			});
 		}
-	
+	}
+
 }

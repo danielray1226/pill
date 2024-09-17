@@ -32,7 +32,6 @@ public class Mjpeg extends HttpServlet {
 		}
 	}
 
-	static Brain b = new Brain();
 	private static final long serialVersionUID = 1L;
 
 	/**

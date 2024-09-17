@@ -1,6 +1,7 @@
 /**
  * 
  */
+
 function openScreen(screenName) {
 	var i, tablinks;
 	let screens = document.getElementsByClassName("screenCssClass");
@@ -13,7 +14,21 @@ function openScreen(screenName) {
 
 }
 var testData = { "email": "hey@mail.com", "hello": "please run the pyton script to dispence" };
+function setScreenSaver(screensaver) {
+	if (screensaver) {
+		console.log("screensaver ssaver =", document.getElementById("ssaver").style.display);
+		console.log("screensaver wrapper =", document.getElementById("wrapper").style.display);
+		document.getElementById("ssaver").style.display = "block";
+		document.getElementById("wrapper").style.display = "none";
 
+	}
+	else {
+		console.log("no screensaver ssaver =", document.getElementById("ssaver").style.display);
+		console.log("no screensaver wrapper =", document.getElementById("wrapper").style.display);
+		document.getElementById("ssaver").style.display = "none";
+		document.getElementById("wrapper").style.display = "block";
+	}
+}
 function myCallbackOnClick(data) {
 	// alert("Dispenced: "+JSON.stringify(data));
 	console.log("and the data is", typeof data, data);
@@ -23,14 +38,14 @@ function myCallbackOnClick(data) {
 	);
 	document.body.append(callback);
 }
-function onDispenseCallback(originaldata, responsedata){
-	console.log("Reponse: ", originaldata,  " ", responsedata);
+function onDispenseCallback(originaldata, responsedata) {
+	console.log("Reponse: ", originaldata, " ", responsedata);
 }
-function dispenseButtonClick(buttonnumber){
-	var data = { "number": buttonnumber, "type": "dispense"};
+function dispenseButtonClick(buttonnumber) {
+	var data = { "number": buttonnumber, "type": "dispense" };
 	let p = jsonCall(data, onDispenseCallback);
-	
-	
+
+
 }
 
 async function jsonCall(data, callback) {
@@ -82,7 +97,7 @@ async function jsonCall(data, callback) {
 }
 
 const btn = document.getElementById("button");
-if (btn!=null) btn.addEventListener('click', () => {
+if (btn != null) btn.addEventListener('click', () => {
 	let pElem = document.createElement('p');
 	pElem.textContent = 'This is a newly-added paragraph.';
 	document.body.appendChild(pElem);

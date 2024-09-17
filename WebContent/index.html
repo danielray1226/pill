@@ -3,13 +3,29 @@
 <head>
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <script src="myscripts.js"></script>
+
 <style>
 </style>
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
-
+	<div id="ssaver">
+		<div id="circle">
+	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px" height="480px" viewBox="0 0 300 300" enable-background="new 0 0 300 300" xml:space="preserve">
+    <defs>
+        <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/>
+    </defs>
+    <circle cx="150" cy="100" r="75" fill="none"/>
+    <g>
+        <use xlink:href="#circlePath" fill="none"/>
+        <text fill="#000">
+            <textPath xlink:href="#circlePath">Daniel & Ella Raybosh Pill Dispenser!</textPath>
+        </text>
+    </g>
+</svg>
+</div>
+	</div>
 	<div id="wrapper">
 		<div id="top"></div>
 		<div id="main">
@@ -74,6 +90,21 @@
 		document.getElementById("welcomeDivId").click();
 	</script>
 </body>
+<script src="pullevents.js"> </script>
+<script>
+function onDataPulled(data) {
+	if (data.type== "screensaver"){
+		setScreenSaver(data.screensaver);
+	}
+	
+	console.log("GOT DATA:", data);
+	//let screenName=data.showScreen;
+	//console.log("SHOW :", screenName);
+	//openScreen(screenName, 'red')
+	
+}
+pullServerEvents(onDataPulled);
+</script>
 
 </html>
 
