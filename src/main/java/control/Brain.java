@@ -7,7 +7,10 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -225,9 +228,17 @@ public class Brain {
 							JsonElement faces = JsonUtils.getJsonElement(faceDetections, "faces");
 							if (faces!=null && faces.isJsonArray() && faces.getAsJsonArray().size()>0) {
 								// we have someone present
-								setPersonPresent(true);
-							} else
+								detectionHistory.add(System.currentTimeMillis());
+								// keep last 5 seconds
+								for (Iterator<Long> it = detectionHistory.iterator();it.hasNext();) {
+									long detectionMs=it.next();
+									if (detectionMs<System.currentTimeMillis()-5000) it.remove();
+									else break;
+								}
+								if (detectionHistory.size()>1) setPersonPresent(true);
+							} else {
 								setPersonPresent(false);
+							}
 							//System.err.println("Face detections: "+faceDetections);
 							// System.out.println(ai);
 						} catch (IOException e) {
@@ -245,6 +256,8 @@ public class Brain {
 		}
 	}
 
+	TreeSet<Long> detectionHistory=new TreeSet<>();
+	
 	volatile JsonElement faceDetections;
 	volatile long lastFaceDetectionMs=System.currentTimeMillis();
 	volatile long lastNoFaceDetectionMs=System.currentTimeMillis();
