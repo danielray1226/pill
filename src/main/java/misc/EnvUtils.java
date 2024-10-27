@@ -47,6 +47,20 @@ public class EnvUtils {
 			throw new RuntimeException ("Error: "+  e.getMessage());
 		}
 	}
+
+	public static void espeak(String text) {
+		try {
+			// espeak -v en+f5 -s130 "outch, it seems to be a dispense issue, haha haha haha, now, go away, and never come back"
+			ProcessBuilder b = new ProcessBuilder("espeak", "-v", "en+f2", "-s150", text);
+			b.redirectOutput(Redirect.INHERIT);
+			b.redirectError(Redirect.INHERIT);
+			Process process = b.start();
+			if (process.waitFor() != 0) throw new RuntimeException("espeak error");
+		} catch (Exception e) {
+			throw new RuntimeException("Error: " + e.getMessage());
+		}
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("(" + EnvUtils.getEnvName() + ")");
 	}

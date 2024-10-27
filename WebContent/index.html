@@ -9,22 +9,24 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<body>
+<body bgcolor="black">
 	<div id="ssaver">
 		<div id="circle">
-	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px" height="480px" viewBox="0 0 300 300" enable-background="new 0 0 300 300" xml:space="preserve">
-    <defs>
-        <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/>
-    </defs>
-    <circle cx="150" cy="100" r="75" fill="none"/>
-    <g>
-        <use xlink:href="#circlePath" fill="none"/>
-        <text fill="#000">
-            <textPath xlink:href="#circlePath">Daniel & Ella Raybosh Pill Dispenser!</textPath>
-        </text>
-    </g>
-</svg>
-</div>
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" 
+				width="300px" height="600px" viewBox="0 0 300 300" enable-background="new 0 0 300 300" xml:space="preserve">
+			    <defs>
+			        <!--  <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/> -->
+			        <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/>
+			    </defs>
+			    <circle cx="150" cy="100" r="75" fill="none"/>
+			    <g>
+			        <use xlink:href="#circlePath" fill="none"/>
+			        <text fill="lightblue">
+			            <textPath xlink:href="#circlePath">Daniel & Ella Raybosh Pill Dispenser™</textPath>
+			        </text>
+			    </g>
+			</svg>
+		</div>
 	</div>
 	<div id="wrapper">
 		<div id="top"></div>
@@ -43,16 +45,21 @@
 
 							<div id="dispensingScreenId" class="screenCssClass">
 								<div>
-									<button id='button' TYPE="BUTTON" class="btn"
+									<button id='button0' TYPE="BUTTON" class="btn"
 										onClick="dispenseButtonClick(0)">
-										<img src="pills.png" WIDTH=200px HEIGHT=200px align="center"
-											ALT="blah"> <BR>Dispence the pill
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 1
 									</button>
-									<button id='button' TYPE="BUTTON" class="btn"
+									<button id='button1' TYPE="BUTTON" class="btn"
 										onClick="dispenseButtonClick(1)">
-										<img src="pills.png" WIDTH=200px HEIGHT=200px align="center"
-											ALT="blah"> <BR>Dispence the pill
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 2
 									</button>
+									<button id='button2' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(2)">
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 3
+									</button>									
 								</div>
 							</div>
 
@@ -74,7 +81,6 @@
 					</th>
 				</tr>
 			</table>
-			<div class="container"></div>
 		</div>
 
 		<div id="bottom">
@@ -92,6 +98,7 @@
 </body>
 <script src="pullevents.js"> </script>
 <script>
+setScreenSaver(false);
 function onDataPulled(data) {
 	if (data.type== "screensaver"){
 		setScreenSaver(data.screensaver);

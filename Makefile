@@ -25,6 +25,8 @@ local: war
 pi: war
 	cat $(ROOT)/target/pill.war |ssh pi@192.168.25.1 'cat > /opt/tomcat/webapps/ROOT.war ; rm -rf /opt/tomcat/webapps/ROOT ; sudo systemctl restart tomcat ; sudo systemctl restart pill-x' 
 
+local: war
+	cat $(ROOT)/target/pill.war |sudo su pi -c 'cat > /opt/tomcat/webapps/ROOT.war ; rm -rf /opt/tomcat/webapps/ROOT ; sudo systemctl restart tomcat ; sudo systemctl restart pill-x'
 
 
 LIB_LIST:=$(shell find $(ROOT)/WebContent/WEB-INF/lib -name '*.jar' -printf '%p:')

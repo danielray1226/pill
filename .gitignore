@@ -1,2 +1,3 @@
 build/
 target/pill.war
+WebContent/WEB-INF/classes/*

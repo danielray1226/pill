@@ -8,6 +8,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,8 +49,22 @@ public class Brain {
 	volatile long lastFaceDetectionMS;
 	List<Dispenser> dispensers = new ArrayList<Dispenser>();
 	ProcessMaster servoController;
+	ProcessMaster irController;
 	ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
 	ExecutorService offloaded = Executors.newCachedThreadPool();
+	
+	ExecutorService soundExecutor = Executors.newSingleThreadExecutor();
+	public void say(final String text) {
+		soundExecutor.submit(new Callable<Void>() {
+			public Void call() throws Exception {
+				EnvUtils.espeak(text);
+				return null;
+			}
+		});
+	}
+	
+	
+	public ExecutorService getExecutorService() {return offloaded;}
 	ProcessMaster cameraMaster;
 	ProcessMaster face;
 	AtomicLong count = new AtomicLong();
@@ -82,10 +98,15 @@ public class Brain {
 		this.root = root;
 		cameraMaster = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/pict.py",
 				dir);
-		face = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/yoloface.py",
+		//face = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/yoloface.py",
+		//		root + "/WEB-INF/scripts/yolov8n-face.pt");
+		face = new ProcessMaster("bash", Brain.getRoot() + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/yoloface.sh",
 				root + "/WEB-INF/scripts/yolov8n-face.pt");
 		String subscript = Brain.getRoot() + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/servo.sh";
 		servoController = new ProcessMaster("sh", subscript);
+		irController = new ProcessMaster("python3", root + "/WEB-INF/scripts/" + EnvUtils.getEnvName() + "/irdetect.py");
+		
+		
 		schedule.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
@@ -104,8 +125,9 @@ public class Brain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		int[] irPins=new int[] {17,27,22,5};
 		for (int i = 0; i < 4; i++) {
-			dispensers.add(new Dispenser(i, this));
+			dispensers.add(new Dispenser(i,irPins[i], this));
 		}
 		schedule.scheduleAtFixedRate(new Runnable() {
 			@Override
@@ -115,7 +137,7 @@ public class Brain {
 					message.addProperty("type", "screensaver");
 					message.addProperty("screensaver", ss);
 					ss=!ss;
-					Broadcaster.broadcast(message);
+//					Broadcaster.broadcast(message);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -126,15 +148,17 @@ public class Brain {
 		}, 10, 10, TimeUnit.SECONDS);
 	}
 	static boolean ss = false;
-	public void dispense(int servonum) throws IOException, InterruptedException {
-		dispensers.get(servonum).dispense();
-
+	public boolean dispense(int servonum) throws IOException, InterruptedException, ExecutionException {
+		return dispensers.get(servonum).dispense();
 	}
 
 	public ProcessMaster getServoController() {
 		return servoController;
 	}
-
+	public ProcessMaster getIrController() {
+		return irController;
+	}
+	
 	public void destroy() {
 		destroy = true;
 		schedule.shutdownNow();

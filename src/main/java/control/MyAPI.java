@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -50,15 +51,22 @@ public class MyAPI extends HttpServlet {
 		JsonObject obj = (JsonObject)je;
 		String type = obj.get("type").getAsString();
 		int servonum = obj.get("number").getAsInt();
+		boolean success=false;
 		try {
-			Brain.getBrain().dispense(servonum);
+			Brain.getBrain().say("Dispencing from container "+(servonum+1));
+			success=Brain.getBrain().dispense(servonum);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
 		}
+		if (success) Brain.getBrain().say("Successfuly dispenced from container "+(servonum+1));
+		else  Brain.getBrain().say("Failed to dispence from container "+(servonum+1));
+		
 		JsonObject res = new JsonObject();
-		res.addProperty("success", true);
+		res.addProperty("success", success);
 		response.getOutputStream().write(res.toString().getBytes(StandardCharsets.UTF_8));
 	}
 
