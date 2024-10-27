@@ -45,8 +45,6 @@ public class Brain {
 		}
 	}
 
-	volatile JsonElement faceDetections;
-	volatile long lastFaceDetectionMS;
 	List<Dispenser> dispensers = new ArrayList<Dispenser>();
 	ProcessMaster servoController;
 	ProcessMaster irController;
@@ -125,8 +123,8 @@ public class Brain {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		int[] irPins=new int[] {17,27,22,5};
-		for (int i = 0; i < 4; i++) {
+		int[] irPins=new int[] {17,27,22};
+		for (int i = 0; i < 3; i++) {
 			dispensers.add(new Dispenser(i,irPins[i], this));
 		}
 		schedule.scheduleAtFixedRate(new Runnable() {
@@ -224,8 +222,13 @@ public class Brain {
 						j.addProperty("file", tempFile.getAbsolutePath());
 						try {
 							faceDetections = face.sendobject(j);
-							lastFaceDetectionMS = System.currentTimeMillis();
-							System.err.println(faceDetections);
+							JsonElement faces = JsonUtils.getJsonElement(faceDetections, "faces");
+							if (faces!=null && faces.isJsonArray() && faces.getAsJsonArray().size()>0) {
+								// we have someone present
+								setPersonPresent(true);
+							} else
+								setPersonPresent(false);
+							//System.err.println("Face detections: "+faceDetections);
 							// System.out.println(ai);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
@@ -239,6 +242,63 @@ public class Brain {
 					}
 				}
 			});
+		}
+	}
+
+	volatile JsonElement faceDetections;
+	volatile long lastFaceDetectionMs=System.currentTimeMillis();
+	volatile long lastNoFaceDetectionMs=System.currentTimeMillis();
+	volatile boolean screenSaverOn=false;
+	volatile long lastScreenSaverChangeMs=System.currentTimeMillis();
+	volatile long lastScreenSaverMessageMs=System.currentTimeMillis();
+	
+	protected void setPersonPresent(boolean present) {
+		long now = System.currentTimeMillis();
+		
+		if (present) {
+			lastFaceDetectionMs=now;
+			screenSaverOn(false);
+		} else {
+			if (now-lastFaceDetectionMs>10000) {
+				// dint detect any faces in the last 10 seconds
+				// in case detection is flickering
+				lastNoFaceDetectionMs=now;
+			}			
+			if (lastNoFaceDetectionMs-lastFaceDetectionMs > 20000 /* 20 seconds of reliably not seeing anyone */) {
+				// unable to detect in the last 20 seconds
+				screenSaverOn(true);
+			}
+				
+		}
+		
+	}
+
+
+	private void screenSaverOn(boolean ss) {
+		try {
+			if (ss!=screenSaverOn) {
+				screenSaverOn=ss;
+				if (screenSaverOn) say("Goodbye");
+				else say("Hello");
+				JsonObject message = new JsonObject();
+				message.addProperty("type", "screensaver");
+				message.addProperty("screensaver", ss);
+				Broadcaster.broadcast(message);
+				lastScreenSaverChangeMs=System.currentTimeMillis();
+				lastScreenSaverMessageMs=System.currentTimeMillis();
+			} else {
+				// resend screensaver message once in a while
+				if (System.currentTimeMillis()-lastScreenSaverMessageMs>3000) {
+					JsonObject message = new JsonObject();
+					message.addProperty("type", "screensaver");
+					message.addProperty("screensaver", ss);
+					Broadcaster.broadcast(message);
+					lastScreenSaverMessageMs=System.currentTimeMillis();
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

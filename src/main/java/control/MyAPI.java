@@ -45,29 +45,32 @@ public class MyAPI extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		ServletInputStream b = request.getInputStream();
-		String s = new String(b.readAllBytes(), StandardCharsets.UTF_8);
-		JsonElement je = JsonParser.parseString(s);
+
+		JsonElement je = JsonParser.parseReader(request.getReader());
 		JsonObject obj = (JsonObject)je;
 		String type = obj.get("type").getAsString();
-		int servonum = obj.get("number").getAsInt();
-		boolean success=false;
-		try {
-			Brain.getBrain().say("Dispencing from container "+(servonum+1));
-			success=Brain.getBrain().dispense(servonum);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
+		if ("dispense".equals(type)) {
+			int servonum = obj.get("number").getAsInt();
+			boolean success=false;
+			try {
+				Brain.getBrain().say("Dispencing from container "+(servonum+1));
+				success=Brain.getBrain().dispense(servonum);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+			if (success) Brain.getBrain().say("Successfuly dispenced from container "+(servonum+1));
+			else  Brain.getBrain().say("Failed to dispence from container "+(servonum+1));
+			
+			JsonObject res = new JsonObject();
+			res.addProperty("success", success);
+			response.getOutputStream().write(res.toString().getBytes(StandardCharsets.UTF_8));
+		} else if ("screensaverTouched".equals(type)) {
+			Brain.getBrain().setPersonPresent(true);
 		}
-		if (success) Brain.getBrain().say("Successfuly dispenced from container "+(servonum+1));
-		else  Brain.getBrain().say("Failed to dispence from container "+(servonum+1));
-		
-		JsonObject res = new JsonObject();
-		res.addProperty("success", success);
-		response.getOutputStream().write(res.toString().getBytes(StandardCharsets.UTF_8));
 	}
 
 }

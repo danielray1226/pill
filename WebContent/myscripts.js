@@ -76,7 +76,7 @@ async function jsonCall(data, callback) {
 		console.log("text is ", p3);
 		var actext = await p3;
 		console.log("actual text is ", actext);
-		callback(data, actext);
+		if (callback) callback(data, actext);
 	}
 	catch (error) {
 		console.log("error is ", error);
@@ -103,10 +103,17 @@ async function jsonCall(data, callback) {
 	});*/
 	console.log("3. Received: ")
 }
-
+/*
 const btn = document.getElementById("button");
 if (btn != null) btn.addEventListener('click', () => {
 	let pElem = document.createElement('p');
 	pElem.textContent = 'This is a newly-added paragraph.';
 	document.body.appendChild(pElem);
 });
+*/
+
+function screensaverTouched() {
+	var data = { "type": "screensaverTouched" };
+	jsonCall(data, null);
+}
+
