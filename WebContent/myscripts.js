@@ -39,13 +39,21 @@ function myCallbackOnClick(data) {
 	document.body.append(callback);
 }
 function onDispenseCallback(originaldata, responsedata) {
-	console.log("Reponse: ", originaldata, " ", responsedata);
+	console.log("onDispenseCallback reponse: ", originaldata, " ", responsedata);
+	enableDispenseButtons(true);
 }
+
+function enableDispenseButtons(enabled) {
+	document.getElementById("button0").disabled = !enabled;
+	document.getElementById("button1").disabled = !enabled;
+	document.getElementById("button2").disabled = !enabled;
+	console.log("disabled dispensingScreenId");	
+}
+
 function dispenseButtonClick(buttonnumber) {
 	var data = { "number": buttonnumber, "type": "dispense" };
 	let p = jsonCall(data, onDispenseCallback);
-
-
+	enableDispenseButtons(false);
 }
 
 async function jsonCall(data, callback) {
