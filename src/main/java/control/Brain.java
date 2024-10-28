@@ -6,9 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
@@ -130,6 +133,7 @@ public class Brain {
 		for (int i = 0; i < 3; i++) {
 			dispensers.add(new Dispenser(i,irPins[i], this));
 		}
+		/*
 		schedule.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {
@@ -147,6 +151,7 @@ public class Brain {
 			}
 
 		}, 10, 10, TimeUnit.SECONDS);
+		*/
 	}
 	static boolean ss = false;
 	public boolean dispense(int servonum) throws IOException, InterruptedException, ExecutionException {
@@ -226,18 +231,18 @@ public class Brain {
 						try {
 							faceDetections = face.sendobject(j);
 							JsonElement faces = JsonUtils.getJsonElement(faceDetections, "faces");
+							// keep last 5 seconds of detections
+							for (Iterator<Long> it = detectionHistory.iterator();it.hasNext();) {
+								long detectionMs=it.next();
+								if (detectionMs<System.currentTimeMillis()-5000) it.remove();
+								else break;
+							}
 							if (faces!=null && faces.isJsonArray() && faces.getAsJsonArray().size()>0) {
 								// we have someone present
 								detectionHistory.add(System.currentTimeMillis());
-								// keep last 5 seconds
-								for (Iterator<Long> it = detectionHistory.iterator();it.hasNext();) {
-									long detectionMs=it.next();
-									if (detectionMs<System.currentTimeMillis()-5000) it.remove();
-									else break;
-								}
 								if (detectionHistory.size()>1) setPersonPresent(true);
 							} else {
-								setPersonPresent(false);
+								if (detectionHistory.size()<2) setPersonPresent(false);
 							}
 							//System.err.println("Face detections: "+faceDetections);
 							// System.out.println(ai);
@@ -255,9 +260,9 @@ public class Brain {
 			});
 		}
 	}
+	//TreeSet<Long> detectionHistory=...
+	SortedSet<Long> detectionHistory=Collections.synchronizedSortedSet(new TreeSet<Long>());
 
-	TreeSet<Long> detectionHistory=new TreeSet<>();
-	
 	volatile JsonElement faceDetections;
 	volatile long lastFaceDetectionMs=System.currentTimeMillis();
 	volatile long lastNoFaceDetectionMs=System.currentTimeMillis();
