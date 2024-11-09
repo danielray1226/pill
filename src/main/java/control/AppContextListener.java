@@ -9,14 +9,16 @@ public class AppContextListener implements ServletContextListener {
 	static Brain brain;
 	public void contextInitialized(javax.servlet.ServletContextEvent sce) {
 		
-		String s = sce.getServletContext().getRealPath("/");
+		String root = sce.getServletContext().getRealPath("/");
 		// ServletContext b = sce.getServletContext().getContext("/");
 		// b.
-		brain = new Brain();
-		brain.init(s);
+		Brain.setDefaultRoot(root);
+		Brain.getBrain();
 		System.out.println("Context Initialized: " + sce);
 	}
 	public void contextDestroyed(javax.servlet.ServletContextEvent sce) {
+		if(brain!=null) {
 		brain.destroy();
+		}
 	}
 }
