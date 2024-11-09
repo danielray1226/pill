@@ -71,7 +71,7 @@ public class ProcessMaster implements AutoCloseable{
 
 	}
 
-	public byte[] senddata(byte[] data) throws IOException {
+	public synchronized byte[] senddata(byte[] data) throws IOException {
 		if (manualClose) {
 			throw new IOException("Manually Closed");
 		}
