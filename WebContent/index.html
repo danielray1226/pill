@@ -1,114 +1,298 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+<script src="myscripts.js"></script>
+<link rel="stylesheet" href="kioskboard-2.3.0.min.css" />
+<script src="kioskboard-2.3.0.min.js"></script>
+<style>
+</style>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Pill Dispenser</title>
 
 </head>
-<style>
-table {
-	font-family: "Lato", sans-serif;
-	height:600px;
-	background-color: #24606D;
-	width:100%;
-}
+<body bgcolor="black">
+	<div id="ssaver" onclick="screensaverTouched()">
+		<div id="circle">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" 
+				width="300px" height="600px" viewBox="0 0 300 300" enable-background="new 0 0 300 300" xml:space="preserve">
+			    <defs>
+			        <!--  <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/> -->
+			        <path id="circlePath" d="M 150, 150 m -60, 0 a 60,60 0 0,1 120,0 a 60,60 0 0,1 -120,0 "/>
+			    </defs>
+			    <circle cx="150" cy="100" r="75" fill="none"/>
+			    <g>
+			        <use xlink:href="#circlePath" fill="none"/>
+			        <text fill="lightblue">
+			            <textPath xlink:href="#circlePath">Daniel & Ella Raybosh Pill Dispenser&trade;</textPath>
+			        </text>
+			    </g>
+			</svg>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="top"></div>
+		<div id="main">
+			<table style="width: 100%">
+				<tr>
+					<th style="width: 70%">
+						<div class="screens">
+							<div id="welcomeId" class="screenCssClass">
+								<div class="welcomeCssClass">
+									<h1>Welcome To The Pill Dispenser &trade;</h1>
+									<p>Daniel Raybosh &#169;</p>
+									<p>Ella Raybosh &#169;</p>
+								</div>
+							</div>
 
-th, td {
-	border: 1px solid black;
-}
-.tablink {
-  background-color: #555;
-  color: white;
-  font-size: 17px;
-}
+							<div id="dispensingScreenId" class="screenCssClass">
+								<div>
+									<button id='button0' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(0)">
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 1
+									</button>
+									<button id='button1' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(1)">
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 2
+									</button>
+									<button id='button2' TYPE="BUTTON" class="btn"
+										onClick="dispenseButtonClick(2)">
+										<img src="pills.png" WIDTH=50px HEIGHT=50px align="center"
+											ALT="blah"> <br/>Dispense<br/>Container 3
+									</button>									
+								</div>
+							</div>
 
-.screenCssClass {
-	color: white;
-	display: none;
-	text-align: center;
-}
+							<div id="schedule" class="screenCssClass">
+								<h1>Schedule</h1>
+								<div style="font-size:15px">
+									<input type="radio" name="schedunitRadio" value="never" checked="checked" >No Scheduler<br/>
+									<span>Schedule every: </span>
+									<input id="schedunitId" class="js-kioskboard-input" data-kioskboard-type="numpad" data-kioskboard-placement="bottom" value="1" placeholder="Schedule Every ..." />
+	    							<input type="radio" name="schedunitRadio" value="minute">Minute
+	    							<input type="radio" name="schedunitRadio" value="hour" >Hour
+	    							<input type="radio" name="schedunitRadio" value="day">Day
+	    							<input type="radio" name="schedunitRadio" value=week">Week
+	    							<br/>
+	    							<div>
+		    							<span>Wake Before: </span>
+										<input id="schedWakeBeforeId" class="js-kioskboard-input" data-kioskboard-type="numpad" data-kioskboard-placement="bottom" value="20" placeholder="Wake Before ..." />
+										<input type="radio" name="schedWakeBeforeRadio" value="second" checked="checked" >Second
+		    							<input type="radio" name="schedWakeBeforeRadio" value="minute" >Minute
+		    							<input type="radio" name="schedWakeBeforeRadio" value="hour">Hour
+	    							</div>
+	    							<br/>
+	    							<div >
+		    							<span>Wait After: </span>
+										<input id="schedWaitAfterId" class="js-kioskboard-input" data-kioskboard-type="numpad" data-kioskboard-placement="bottom" value="20" placeholder="Wait After ..." />
+										<input type="radio" name="schedWaitAfterRadio" value="second" checked="checked" >Second
+		    							<input type="radio" name="schedWaitAfterRadio" value="minute" >Minute
+		    							<input type="radio" name="schedWaitAfterRadio" value="hour">Hour
+	    							</div>
+    								<br/>
+    								<input id="numTreatmentsId" class="js-kioskboard-input" data-kioskboard-type="numpad" data-kioskboard-placement="bottom" value="5" placeholder="Number of treatments ..." />
+    								<br/>
+	    							<span>Scheduler start time:</span><input id="schedstartId" type="datetime-local" name="schedstart">    							
+    								
+    								<button type="button" style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px" onclick="sendSchedData()">Set</button>
+    								<script>
+    								function sendSchedData() {
 
-.tablink:hover {
-	background-color: #777;
-}
+    						            let schedunitRadio = document.getElementsByName('schedunitRadio');
+    						            let schedunit;
+    						            for (i = 0; i < schedunitRadio.length; i++) {
+    						                if (schedunitRadio[i].checked) {
+    						                	schedunit=schedunitRadio[i].value;
+    						                }
+    						            }
+    						            
+    						            let schedWakeBeforeRadio = document.getElementsByName('schedWakeBeforeRadio');
+    						            let schedWakeBeforeUnit;
+    						            for (i = 0; i < schedWakeBeforeRadio.length; i++) {
+    						                if (schedWakeBeforeRadio[i].checked) {
+    						                	schedWakeBeforeUnit=schedWakeBeforeRadio[i].value;
+    						                }
+    						            }
+    						            
+    						            let schedWaitAfterRadio = document.getElementsByName('schedWaitAfterRadio');
+    						            let schedWaitAfterUnit;
+    						            for (i = 0; i < schedWaitAfterRadio.length; i++) {
+    						                if (schedWaitAfterRadio[i].checked) {
+    						                	schedWaitAfterUnit=schedWaitAfterRadio[i].value;
+    						                }
+    						            }
+    						            
+    						            let schedunitNum = document.getElementById('schedunitId');
+    						            let numTreatments = document.getElementById('numTreatmentsId');
+    						            
+    						            console.log("schedunit: "+schedunit);
+    						            let schedstart=document.getElementById('schedstartId');
+    						            console.log("schedstart: <"+schedstart.value+">");
+    						            let schedWakeBefore=document.getElementById('schedWakeBeforeId');
+    						            console.log("schedWakeBefore: <"+schedWakeBefore.value+">");
+    						            let schedWaitAfter=document.getElementById('schedWaitAfterId');
+    						        	var data = { "type": "schedule", 
+    						        			"schedunit" : schedunit,
+    						        			"schedevery" : schedunitNum.value,
+    						        			"schedWakeBefore": schedWakeBefore.value,
+    						        			"schedWakeBeforeUnit" : schedWakeBeforeUnit,
+    						        			"schedWaitAfter": schedWaitAfter.value,
+    						        			"schedWaitAfterUnit" : schedWaitAfterUnit,
+    						        			"schedstart" : schedstart.value,
+    						        			"numTreatments" : numTreatments.value
+    						        			};
+    						        	jsonCall(data, null);
+    								}
+    								</script>
+	    						</div>	    							
+							</div>
 
-.bottomrow {
-}
-</style>
-<body>
-	<table>
-		<tr style="height:100%">
-			<th style="width: 70%">
-				<div class="main">
+							<div id="settings" class="screenCssClass" >
+								<h1>Settings</h1>
 
-					<div id="welcomeId" class="screenCssClass">
-						<div class="welcomeCssClass">
-							<h1>Welcome To The Pill Dispener &trade;</h1>
-							<p>Daniel Raybosh &#169;</p>
-							<p>Ella Raybosh &#169;</p>
+								<div>
+									Connected to: <label id="currentWifi">---</label>
+									<br>
+									IP: <label id="currentIp">---</label>
+								</div>
+								<br/>
+								<div>
+								  <label for="wifis">Available Wifi:</label>
+								  <select name="wifis" id="wifisId">
+								  </select>
+								  <!-- <button id="refreshWifiId" type="button" style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px" onclick="refreshWifi()">Refresh</button> -->
+								  <button id="refreshWifiId" type="button" onclick="refreshWifi()">Refresh</button>
+								</div>
+								<span >
+								<br/>
+								<input id="wifiPasswordId" 
+									type="password"
+									class="js-kioskboard-input" 
+									data-theme="dark" 
+									data-kioskboard-type="all" 
+									data-kioskboard-placement="bottom" 
+									data-kioskboard-specialcharacters="true" placeholder="wifi password..." />
+								<button id="setWifiId" type="button" onclick="setWifi()">Connect</button>
+								<!--  <button id="setWifiId" type="button" style="padding: 10px 10px 10px 10px; margin: 10px 10px 10px 10px" onclick="setWifi()">Connect</button> -->
+								</span>
+								<br/><br/>
+								<span>
+								pill 
+								<input id="pillPasswordId" 
+									type="password"
+									class="js-kioskboard-input" 
+									data-theme="dark" 
+									data-kioskboard-type="all" 
+									data-kioskboard-placement="bottom" 
+									data-kioskboard-specialcharacters="true" placeholder="pill wifi password..." />
+								<button id="setPillWifiId" type="button" onclick="setPillWifi()">Set</button>								 
+								</span>
+								<script>
+								function refreshWifi() {
+									let wifi = document.getElementById('wifisId');
+									console.log(wifi.value);
+									wifi.innerHTML='';
+									document.getElementById('refreshWifiId').disabled=true;
+									var data = { "type": "listWifi"};
+									jsonCall(data, (data,ret)=>{
+											document.getElementById('refreshWifiId').disabled=false;
+											let text='';
+											for (const wifi of ret) {
+												  text+='<option value="'+wifi+'">'+wifi+'</option>\n';
+											}
+											if (ret.length>0) 
+												document.getElementById('setWifiId').disabled=false;
+											
+											wifi.innerHTML=text;
+											currentWifi();
+										}
+									);
+								}
+								function currentWifi() {
+									var data = { "type": "currentWifi"};
+									jsonCall(data, (data,ret)=>
+										{
+											console.log("Got back:",ret);
+											document.getElementById('currentWifi').textContent=ret.wifi;
+											document.getElementById('currentIp').textContent=ret.ip;
+										}
+									);
+								}
+								function setWifi() {
+									document.getElementById('setWifiId').disabled=true;
+									document.getElementById('refreshWifiId').disabled=true;
+									var data = { "type": "setWifi", "wifi" : document.getElementById('wifisId').value, "password": document.getElementById('wifiPasswordId').value};
+									jsonCall(data, (data,ret)=>
+										{
+											console.log("Got back:",ret);
+											document.getElementById('setWifiId').disabled=false;
+											document.getElementById('refreshWifiId').disabled=false;
+											currentWifi();
+										}
+									);									
+								}
+								function setPillWifi() {
+									document.getElementById('setPillWifiId').disabled=true;
+									document.getElementById('refreshWifiId').disabled=true;
+									var data = { "type": "setPillWifi", "password": document.getElementById('pillPasswordId').value};
+									jsonCall(data, (data,ret)=>
+										{
+											console.log("Got back:",ret);
+											document.getElementById('setPillWifiId').disabled=false;
+											document.getElementById('refreshWifiId').disabled=false;
+											currentWifi();
+										}
+									);									
+								}
+								document.getElementById('setWifiId').disabled=true;
+								refreshWifi();
+								currentWifi();
+								</script>
+							</div>
+							
 						</div>
-					</div>
-
-					<div id="dispensingScreenId" class="screenCssClass">
-						<div>
-							<button id='button' TYPE="BUTTON" class="btn"
-								onClick="doSomething(testData, myCallbackOnClick)">
-								<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
-									ALT="blah"> <BR>Dispence the pill
-							</button>
-							<button id='button' TYPE="BUTTON" class="btn"
-								onClick="doSomething(testData, myCallbackOnClick)">
-								<img src="pill.jpg" _WIDTH=200 _HEIGHT=60 align="center"
-									ALT="blah"> <BR>Dispence the pill
-							</button>
+					</th>
+					<th style="width: 30%; background: rgb(192, 191, 188)">
+						<div class="cameras">
+							<img src="mjpeg/default" WIDTH=325% HEIGHT=150% align="middle" /> <img src="mjpeg/ai" WIDTH=325% HEIGHT=150% align="middle" />
 						</div>
-					</div>
+					</th>
+				</tr>
+			</table>
+		</div>
 
-					<div id="schedule" class="screenCssClass">
-						<h1>Schedule</h1>
-						<p>Schedule is to schedule dispense.</p>
-					</div>
-
-					<div id="settings" class="screenCssClass">
-						<h1>Settings</h1>
-						<p>Settings is to setup.</p>
-					</div>
-				</div>
-			</th>
-
-			<th style="width: 30%">
-				<img src="mjpeg/default"/>
-				<img src="mjpeg/ai"/>
-				
-			</th>
-		</tr>
-		<tr>
-			<th style="width: 100%; height: 10%" colspan="2">
-					<button class="tablink" onclick="openScreen('welcomeId', 'red')"
-						id="welcomeDivId">Welcome</button>
-					<button class="tablink"
-						onclick="openScreen('dispensingScreenId')">Dispence</button>
-					<button class="tablink" onclick="openScreen('Schedule')">Schedule</button>
-					<button class="tablink" onclick="openScreen('Settings')">Settings</button>
-			</th>
-		</tr>
-	</table>
-	<!-- Tab links -->
-
-
+		<div id="bottom">
+			<button class="tablink" onclick="openScreen('welcomeId')"
+				id="welcomeDivId">Welcome</button>
+			<button class="tablink" onclick="openScreen('dispensingScreenId')">
+				Dispense</button>
+			<button class="tablink" onclick="openScreen('schedule')">Schedule</button>
+			<button class="tablink" onclick="openScreen('settings')">Settings</button>
+		</div>
+	</div>
 	<script>
-	function openScreen(screenName) {
-		  var i, tablinks;
-		  let screens = document.getElementsByClassName("screenCssClass");
-		  console.log("screens by class: ", screens)
-		  
-		  for (i = 0; i < screens.length; i++) {
-			  screens[i].style.display = "none";
-		  }
-		  document.getElementById(screenName).style.display = "block";
-
-		}
-	document.getElementById("welcomeDivId").click();
+		document.getElementById("welcomeDivId").click();
 	</script>
 </body>
+<script src="keyboard-run.js"></script>
+<script src="pullevents.js"> </script>
+<script>
+setScreenSaver(false);
+function onDataPulled(data) {
+	if (data.type== "screensaver"){
+		setScreenSaver(data.screensaver);
+	}
+	
+	console.log("GOT DATA:", data);
+	//let screenName=data.showScreen;
+	//console.log("SHOW :", screenName);
+	//openScreen(screenName, 'red')
+	
+}
+pullServerEvents(onDataPulled);
+</script>
+
 </html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+body {
+  font-family: "Lato", sans-serif;
+        height:100%;
+        margin:0;
+        padding:0;
+        background-color:black;
+}
+
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 25%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content */
+.screenCssClass {
+  color: white;
+  display: none;
+  padding: 100px;
+  text-align: center;
+}
+
+#dispensingScreenId {background-color:green;}
+#Schedule {background-color:blue;}
+#Settings {background-color:orange;}
+
+
+.welcomeCssClass {
+  display: inline-block;
+}
+
+.btn:active { background:green; } 
+
+.main { 
+    /* display: flex;
+    flex-direction: column;
+    color: white;*/
+  	background-color: #24606D;	
+  	position:absolute;
+  	top:0px;
+    bottom:50px;
+    width:100%;
+}
+.bottomrow {
+position:absolute;
+    bottom:0;
+    height:50px;
+    width:100%;
+}
+</style>
+</head>
+<body>
+
+<div class="main">
+
+<div id="welcomeId" class="screenCssClass">
+  <div class="welcomeCssClass">
+  <h1>Welcome To The Pill Dispenser &trade;</h1>
+  <p>Daniel Raybosh &#169;</p>
+  <p>Ella Raybosh &#169;</p>
+  </div>
+</div>
+
+<div id="dispensingScreenId" class="screenCssClass">
+	<div>
+		<button id='button' TYPE="BUTTON" class="btn" onClick="doSomething(testData, myCallbackOnClick)">
+		<img src="pills.png" _WIDTH=200 _HEIGHT=60  align="center" ALT="blah">
+		<BR>Dispense the pill
+		</button>
+		<button id='button' TYPE="BUTTON" class="btn" onClick="doSomething(testData, myCallbackOnClick)">
+		<img src="pills.png" _WIDTH=200 _HEIGHT=60  align="center" ALT="blah">
+		<BR>Dispense the pill
+		</button>		
+	</div>
+</div>
+
+<div id="Schedule" class="screenCssClass">
+  <h1>Schedule</h1>
+  <p>Schedule is to schedule dispense.</p>
+</div>
+
+<div id="Settings" class="screenCssClass">
+  <h1>Settings</h1>
+  <p>Settings is to setup.</p>
+</div>
+</div>
+
+<div class="bottomrow">
+<button class="tablink" onclick="openScreen('welcomeId', 'red')" id="welcomeDivId">Welcome</button>
+<button class="tablink" onclick="openScreen('dispensingScreenId', 'green')">Dispence</button>
+<button class="tablink" onclick="openScreen('Schedule', 'blue')">Schedule</button>
+<button class="tablink" onclick="openScreen('Settings', 'orange')">Settings</button>
+</div>
+
+<script>
+function openScreen(screenName,color) {
+  var i, tablinks;
+  let screens = document.getElementsByClassName("screenCssClass");
+  console.log("screens by class: ", screens)
+  
+  for (i = 0; i < screens.length; i++) {
+	  screens[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(screenName).style.display = "block";
+  //elmnt.style.backgroundColor = color;
+
+}
+// Get the element with id="welcomeDivId" and click on it
+document.getElementById("welcomeDivId").click();
+</script>
+
+<script type="text/javascript" src="pullevents.js"></script>
+<script>
+var testData={"email": "😀hey@mail.com", "hello": "please run the pyton script to dispence"};
+
+async function doSomething(aaa,zzz) {
+	  //alert('You clicked me!');
+	try {
+		
+    const reqProps = {
+	  		  method: 'post',
+	  		  headers: {
+	  			    'Content-Type' : 'application/json; charset=utf-8',
+	  			    'Accept': '*/*'
+	  			    
+	  			  },
+	  		  body: JSON.stringify(aaa)
+	  		};
+	console.log("about to send to the server",aaa,zzz, reqProps);
+	var p1= fetch(new Request('myServlet'),reqProps);
+	console.log("fetch promise: ", p1);
+	var p2 = await p1;
+	console.log("second: ", p2);
+	var p3=p2.text();
+	console.log("text is ", p3);
+	var actext=await p3;
+	console.log("actual text is ", actext);
+	}
+	catch (error){
+		console.log("error is ", error);
+	}
+	
+	  /*var r=await fetch(new Request('MyAPIServlet'),reqProps
+	).then(function(response) {
+	      console.log("1. response.json", response);
+	      if (!response.ok) {throw new Error("HTTP error, status = " + response.status);}
+	      let b=response.text();
+
+	        return b;
+	  	}
+	  ).then(function (data) {
+		   console.log("2. data.json",typeof data, data);
+		  zzz(data);   
+	      }
+	  ).catch(function(error) {
+	        var p = document.createElement('p');
+	        p.appendChild(
+	          document.createTextNode('Error: ' + error.message)
+	        );
+	        document.body.insertBefore(p, document.getElementById("button"));
+	  });*/
+	  console.log("3. Received: ")  
+}
+
+function onDataPulled(data) {
+	console.log("GOT DATA:", data);
+	let screenName=data.showScreen;
+	console.log("SHOW :", screenName);
+	openScreen(screenName, 'red')
+	
+}
+pullServerEvents(onDataPulled);
+</script>
+
+</body>
+</html> 

@@ -11,7 +11,7 @@ async function pullServerEvents(onDataAvailable) {
 		body: "{}"
 	};
 
-	let p = fetch(new Request('PushServlet'), reqProps).then(
+	let p = fetch(new Request('messages'), reqProps).then(
 		function(response) {
 			if (!response.ok) { throw new Error("HTTP error, status = " + response.status); }
 			let b = response.json();
@@ -24,5 +24,5 @@ async function pullServerEvents(onDataAvailable) {
 	console.log("data: ", data);
 	onDataAvailable(data);
 	setTimeout(pullServerEvents, 0, onDataAvailable);
-	console.log("called ")
+	console.log("called ");
 }
